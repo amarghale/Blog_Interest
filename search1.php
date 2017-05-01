@@ -8,22 +8,18 @@ $stmt->execute();
 $users1 = $stmt->fetchAll();
 $stmt->closeCursor();
 
-if (!isset($category)) {
-    $category = filter_input(INPUT_GET, "category");
-    if ($category == NULL || $category == " ") {
-        $category = "sports";
-    }
-}
-$stmt1 = $db->prepare("SELECT * FROM blogs, users WHERE blogs.category_name = :category AND blogs.User_id = users.User_id");
-$stmt1->bindparam(":category", $category);
-$stmt1->execute();
-$blogs = $stmt1->fetchAll();
-$stmt1->closeCursor();
+$search = filter_input(INPUT_POST, "search");
 
-$stmt2 = $db->prepare("SELECT DISTINCT category_name FROM blogs");
-$stmt2->execute();
-$category_names = $stmt2->fetchAll();
-$stmt2->closeCursor();
+if ($search == NULL) {
+    include("index.php");
+    exit();
+} else {
+    $query = "SELECT * FROM blogs WHERE blogs.tags LIKE '%" . $search . "%'";
+    $statement = $db->prepare($query);
+    $statement->execute();
+    $reults = $statement->fetchAll();
+    $statement->closeCursor();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -96,12 +92,12 @@ $stmt2->closeCursor();
                     <?php ?>
 
                     <?php
-                    foreach ($blogs as $blog):
-                        $uid = $blog["User_id"];
+                    foreach ($reults as $result):
+                        $uid = $result["User_id"];
                         ?>
 
                         <h2>
-                            <?php echo $blog["blog_title"] ?>
+                            <?php echo $result["blog_title"] ?>
                         </h2>
                         <?php
                         $stmt = $db->prepare("SELECT User_name, User_id, profile_picture FROM users WHERE User_id = $uid");
@@ -112,34 +108,34 @@ $stmt2->closeCursor();
                         <?php foreach ($users as $user): ?>
                             <p class="lead">
                                 by <?php
-                                echo "<a href='public_profile.php?id=" . $user['User_id'] . "'>" . $user["User_name"] . "<br> <br>" . "</a>";
-                                echo "<img src ='profile_pictures/" . $user["profile_picture"] . "' height=50 width = 50 >";
-                            endforeach;
-                            ?>
+                    echo "<a href='public_profile.php?id=" . $user['User_id'] . "'>" . $user["User_name"] . "<br> <br>" . "</a>";
+                    echo "<img src ='profile_pictures/" . $user["profile_picture"] . "' height=50 width = 50 >";
+                endforeach;
+                        ?>
                             </a>
                         </p>                          
-                        <p style="color: grey"><span class="glyphicon glyphicon-time"></span> Posted on <?php echo $blog["blog_date"] ?></p>
+                        <p><span class="glyphicon glyphicon-time"></span> Posted on <?php echo $result["blog_date"] ?></p>
                         <hr>
-                        <?php echo "<img src ='uploads/" . $blog["blog_image"] . "' height=300 width = 755 >" ?>
+                        <?php echo "<img src ='uploads/" . $result["blog_image"] . "' height=300 width = 755 >" ?>
                         <hr>
-                        <p style="text-align: justify"><strong>Tags: </strong> <?php echo $blog["tags"] ?></p>
+                        <p style="text-align: justify"><strong>Tags: </strong> <?php echo $result["tags"] ?></p>
                         <hr>
-                        <p style="text-align: justify"><?php echo $blog["Blog"] ?></p>
+                        <p style="text-align: justify"><?php echo $result["Blog"] ?></p>
                         <hr>
                         <?php
-                        $bid = $blog['Blog_id'];
+                        $bid = $result['Blog_id'];
                         $stmt3 = $db->prepare("SELECT * FROM comments, users WHERE comments.Blog_id = :bid AND users.User_id = comments.user_id");
                         $stmt3->bindparam(":bid", $bid);
                         $stmt3->execute();
                         $comments = $stmt3->fetchAll();
                         $stmt3->closeCursor();
-                        
-                          $stmt4 =$db->prepare("SELECT SUM(likes) AS sum FROM likes WHERE blog_id = :bid");
+
+                        $stmt4 = $db->prepare("SELECT SUM(likes) AS sum FROM likes WHERE blog_id = :bid");
                         $stmt4->bindparam(":bid", $bid);
                         $stmt4->execute();
                         $likes = $stmt4->fetch();
                         $stmt4->closeCursor();
-                        echo "<strong>Likes: </Strong>". $likes['sum'];
+                        echo "<strong>Likes: </Strong>" . $likes['sum'];
                         echo "<hr>";
                         foreach ($comments as $comment):
                             ?>
@@ -163,13 +159,12 @@ $stmt2->closeCursor();
                         <h4>Blog Search</h4>
                         <div class="input-group">
                             <form method="POST" action="search1.php">
-                                <input type="text" class="form-control" name="search" placeholder="Type in a tag">
+                                <input type="text" class="form-control" placeholder="Type in a Keyword or tag">
                                 <span class="input-group-btn">
                                     <button class="btn btn-default" type="button-search">
                                         <span class="glyphicon glyphicon-search"></span>
                                     </button>
                                 </span>
-                            </form>
                         </div>
                         <!-- /.input-group -->
                     </div>
@@ -181,9 +176,9 @@ $stmt2->closeCursor();
                             <div class="col-lg-6">
                                 <ul class="list-unstyled">
                                     <?php
-                                    foreach ($category_names as $category_name):
-                                        echo "<li><a href='index.php?category=" . $category_name['category_name'] . "'>" . $category_name["category_name"] . "</a> </li>";
-                                    endforeach;
+//                                    foreach ($category_names as $category_name):
+//                                        echo "<li><a href='index.php?category=" . $category_name['category_name'] . "'>" . $category_name["category_name"] . "</a> </li>";
+//                                    endforeach;
                                     ?>
                                 </ul>
 

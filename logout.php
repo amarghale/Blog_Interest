@@ -12,3 +12,4 @@
 		$user_logout->doLogout();
 		$user_logout->redirect('index.php');
 	}
+        

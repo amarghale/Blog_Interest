@@ -1,12 +1,11 @@
 <?php
 class Database
 {   
-    private $host = "localhost";
-    private $db_name = "blog_interest_db";
-    private $username = "admin";
-    private $password = "admin";
+    private $host = "mysql02.comp.dkit.ie";
+    private $db_name = "D00172325";
+    private $username = "D00172325";
+    private $password = "IG&!uiH#";
     public $conn;
-     
     public function dbConnection()
 	{
      
@@ -20,7 +19,6 @@ class Database
 		{
             echo "Connection error: " . $exception->getMessage();
         }
-         
         return $this->conn;
     }
 }

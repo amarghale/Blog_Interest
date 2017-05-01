@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 require_once('class.user.php');
 
@@ -16,7 +15,6 @@ if (isset($_POST['btn-signup'])) {
     $upass = strip_tags($_POST['txt_upass']);
     $upass1 = strip_tags($_POST['txt_upass1']);
 
-
     if ($uname == "") {
         $error[] = "provide username !";
     } else if ($umail == "") {
@@ -27,10 +25,9 @@ if (isset($_POST['btn-signup'])) {
         $error[] = "provide password !";
     } else if (strlen($upass) < 6) {
         $error[] = "Password must be atleast 6 characters";
-    }else if ($upass != $upass1) {
+    } else if ($upass != $upass1) {
         $error[] = "Password must match !";
-    }
-    else {
+    } else {
         try {
             $stmt = $user->runQuery("SELECT User_name, email FROM users WHERE User_name=:uname OR email=:umail");
             $stmt->execute(array(':uname' => $uname, ':umail' => $umail));
@@ -41,7 +38,7 @@ if (isset($_POST['btn-signup'])) {
             } else if ($row['email'] == $umail) {
                 $error[] = "sorry email id already registered!";
             } else {
-                if ($user->register($fname, $uname, $umail, $upass, $upass1)) {
+                if ($user->register($fname, $uname, $umail, $upass, $upass1, $image)) {
                     $user->redirect('sign-up.php?joined');
                 }
             }
@@ -61,24 +58,23 @@ if (isset($_POST['btn-signup'])) {
         <link rel="stylesheet" href="css/style.css" type="text/css"  />
     </head>
     <body>
-
         <div class="signin-form">
 
             <div class="container">
 
                 <form method="post" class="form-signin">
                     <h2 class="form-signin-heading">Sign up.</h2><hr />
-<?php
-if (isset($error)) {
-    foreach ($error as $error) {
-        ?>
+                    <?php
+                    if (isset($error)) {
+                        foreach ($error as $error) {
+                            ?>
                             <div class="alert alert-danger">
                                 <i class="glyphicon glyphicon-warning-sign"></i> &nbsp; <?php echo $error; ?>
                             </div>
-        <?php
-    }
-} else if (isset($_GET['joined'])) {
-    ?>
+                            <?php
+                        }
+                    } else if (isset($_GET['joined'])) {
+                        ?>
                         <div class="alert alert-info">
                             <i class="glyphicon glyphicon-log-in"></i> &nbsp; Successfully registered <a href='index.php'>login</a> here
                         </div>
@@ -86,20 +82,27 @@ if (isset($error)) {
                     }
                     ?>
                     <div class="form-group">
-                        <input type="text" class="form-control" name="txt_fname" placeholder="Enter Full Name" value="<?php if (isset($error)) {
-                        echo $fname;
-                    } ?>" />
+                        <input type="text" class="form-control" name="txt_fname" placeholder="Enter Full Name" value="<?php
+                        if (isset($error)) {
+                            echo $fname;
+                        }
+                        ?>" />
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control" name="txt_uname" placeholder="Enter Username" value="<?php if (isset($error)) {
-                        echo $uname;
-                    } ?>" />
+                        <input type="text" class="form-control" name="txt_uname" placeholder="Enter Username" value="<?php
+                        if (isset($error)) {
+                            echo $uname;
+                        }
+                        ?>" />
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control" name="txt_umail" placeholder="Enter E-Mail ID" value="<?php if (isset($error)) {
-                        echo $umail;
-                    } ?>" />
+                        <input type="text" class="form-control" name="txt_umail" placeholder="Enter E-Mail ID" value="<?php
+                        if (isset($error)) {
+                            echo $umail;
+                        }
+                        ?>" />
                     </div>
+
                     <div class="form-group">
                         <input type="password" class="form-control" name="txt_upass" placeholder="Enter Password" />
                     </div>
@@ -113,7 +116,9 @@ if (isset($error)) {
                         </button>
                     </div>
                     <br />
-                    <label>have an account ! <a href="index.php">Sign In</a></label>
+                    <label>have an account ! <a href="login.php">Sign In</a></label> <br>
+                    <label>Go back to Home ! <a href="index.php" class="glyphicon glyphicon-home">Home</a></label>
+
                 </form>
             </div>
         </div>
