@@ -1,11 +1,12 @@
 <?php
 class Database
 {   
-    private $host = "mysql02.comp.dkit.ie";
-    private $db_name = "D00172325";
-    private $username = "D00172325";
-    private $password = "IG&!uiH#";
+    private $host = "localhost";
+    private $db_name = "blog_interest_db";
+    private $username = "admin";
+    private $password = "admin";
     public $conn;
+     
     public function dbConnection()
 	{
      
